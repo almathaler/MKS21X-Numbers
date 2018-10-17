@@ -11,10 +11,11 @@ public class RationalNumber extends RealNumber
     super(0.0);//this value is ignored!
     numerator = nume;
     denominator = deno;
+    reduce();
   }
 
   public double getValue(){
-    return (numerator + 0.0) / denominator;
+    return ((double)numerator) / denominator;
   }
 
   /**
@@ -54,6 +55,13 @@ public class RationalNumber extends RealNumber
   *@return the value expressed as "3/4" or "8/3"
   */
   public String toString(){
+    if (denominator < 0) { ///THIS MEANS IT CHANGES EVERY TIME YOU PRINT IT!!! USE VARIABLES
+      denominator = denominator * -1;
+      numerator = numerator *  -1;
+    }
+    if (numerator == 0 || denominator == 1) {
+      return numerator + "";
+    }
     return numerator + "/" + denominator;
   }
 
@@ -62,9 +70,9 @@ public class RationalNumber extends RealNumber
   *@param b the second integer
   *@return the value of the GCD
   */
-  private static int gcd(int a, int b){
+  public static int gcd(int a, int b){ //remember to switch back to private
     /*use euclids method or a better one*/
-    int newDenom;
+    int greatestCD = 1;
     int remainder_ = 1;
     int a_ = a;
     int b_ = b;
@@ -72,18 +80,23 @@ public class RationalNumber extends RealNumber
       a_ = b;
       b_ = a;
     }
-    while remainder_ != 0 {
-      if (a_%b_ == 0) {
-        newDenom = b_;
+    while (remainder_ != 0) {
+      if (b_ == 0) {
+        greatestCD = 1;
+        return greatestCD;
+      }
+      else if (a_%b_ == 0) {
+        greatestCD = b_;
         remainder_ = 0;
       }
       else {
-        b_ = a_%b_;
+        //c_ = b_;
+        int c_ = a_;
         a_ = b_;
+        b_ = c_%b_;
       }
-
     }
-    return newDenom;
+    return greatestCD;
   }
 
   /**
@@ -92,10 +105,9 @@ public class RationalNumber extends RealNumber
   *reduced after construction.
   */
   private void reduce(){
-    int x = gcd(numerator, denominator);
-    RationalNumber reducedNumber = new RationalNumber((numerator/x), (denominator/x));
-    return reducedNumber;
-
+    int greatestCD = gcd(numerator, denominator);
+    numerator = (numerator / greatestCD);
+    denominator = (denominator / greatestCD);
   }
   /******************Operations Return a new RationalNumber!!!!****************/
   /**
@@ -110,19 +122,21 @@ public class RationalNumber extends RealNumber
   *Return a new RationalNumber that is the this divided by the other
   */
   public RationalNumber divide(RationalNumber other){
-    RationalNumber divided = new RationalNumber((numerator / (other.getNumerator() + 0.0)), (denominator / (other.getDenominator() + 0.0)));
+    RationalNumber divided = new RationalNumber((numerator * other.getDenominator()), (denominator * other.getNumerator()));
     return divided;
-
+  }
   /**
   *Return a new RationalNumber that is the sum of this and the other
   */
   public RationalNumber add(RationalNumber other){
-    return null;
+    RationalNumber added = new RationalNumber((numerator * other.getDenominator() + other.getNumerator() * denominator), (denominator * other.getDenominator()));
+    return added;
   }
   /**
   *Return a new RationalNumber that this minus the other
   */
   public RationalNumber subtract(RationalNumber other){
-    return null;
+    RationalNumber subtracted = new RationalNumber((numerator * other.getDenominator() - other.getNumerator() * denominator), (denominator * other.getDenominator()));
+    return subtracted;
   }
 }
